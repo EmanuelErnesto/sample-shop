@@ -1,0 +1,52 @@
+package com.emanueldev.sample_shop.services;
+
+import com.emanueldev.sample_shop.domain.dtos.request.ProductRequestDTO;
+import com.emanueldev.sample_shop.domain.mappers.ProductMapper;
+import com.emanueldev.sample_shop.exceptions.HttpBadRequestException;
+import com.emanueldev.sample_shop.exceptions.HttpNotFoundException;
+import com.emanueldev.sample_shop.model.Product;
+import com.emanueldev.sample_shop.repositories.ProductRepository;
+import com.emanueldev.sample_shop.utils.ProductExceptionMessageUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+@Service
+public class UpdateProductUseCase {
+
+    private final ProductRepository productRepository;
+
+    public UpdateProductUseCase(
+            ProductRepository productRepository
+    ){
+        this.productRepository = productRepository;
+    }
+
+    @Transactional
+    public Product execute(UUID id, ProductRequestDTO productRequestDTO) {
+        Product product = this.productRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new HttpNotFoundException(
+                                ProductExceptionMessageUtils.PRODUCT_NOT_FOUND)
+                );
+
+        Product productNameAlreadyExists = this.productRepository
+                .findByName(productRequestDTO.getName())
+                .orElse(null);
+
+        boolean productIdIsDifferent = productNameAlreadyExists != null &&
+                productNameAlreadyExists.getId() != product.getId();
+
+        if(productIdIsDifferent) {
+            throw new HttpBadRequestException(
+                    ProductExceptionMessageUtils.PRODUCT_WITH_SAME_NAME_ALREADY_EXISTS
+            );
+        }
+
+        ProductMapper.mappingProductRequestDTOToExistentProductEntity(productRequestDTO, product);
+
+        return productRepository.save(product);
+    }
+}

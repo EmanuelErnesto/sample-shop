@@ -21,7 +21,9 @@ public class CreateProductUseCase {
     @Transactional
     public Product execute(ProductRequestDTO data) {
 
-        boolean productWithSameNameAlreadyExists = productRepository.existsByName(data.getName());
+        boolean productWithSameNameAlreadyExists = productRepository
+                .findByName(data.getName())
+                .isPresent();
 
         if(productWithSameNameAlreadyExists) {
             throw new HttpBadRequestException(ProductExceptionMessageUtils.PRODUCT_WITH_SAME_NAME_ALREADY_EXISTS);
