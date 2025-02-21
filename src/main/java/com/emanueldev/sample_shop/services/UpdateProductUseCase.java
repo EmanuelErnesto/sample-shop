@@ -10,6 +10,7 @@ import com.emanueldev.sample_shop.utils.ProductExceptionMessageUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,12 +33,11 @@ public class UpdateProductUseCase {
                                 ProductExceptionMessageUtils.PRODUCT_NOT_FOUND)
                 );
 
-        Product productNameAlreadyExists = this.productRepository
-                .findByName(productRequestDTO.getName())
-                .orElse(null);
+        Optional<Product> productNameAlreadyExists = this.productRepository
+                .findByName(productRequestDTO.getName());
 
-        boolean productIdIsDifferent = productNameAlreadyExists != null &&
-                productNameAlreadyExists.getId() != product.getId();
+        boolean productIdIsDifferent = (productNameAlreadyExists.isPresent() &&
+                !productNameAlreadyExists.get().getId().equals(product.getId()));
 
         if(productIdIsDifferent) {
             throw new HttpBadRequestException(
