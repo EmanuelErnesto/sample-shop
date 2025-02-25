@@ -1,14 +1,14 @@
 package com.emanueldev.sample_shop.domain.dtos.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductResponseDTO {
 
     private UUID productId;
