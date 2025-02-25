@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateProductUseCase {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public CreateProductUseCase(ProductRepository productRepository) {
+    public CreateProductUseCase(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     @Transactional
@@ -29,7 +31,7 @@ public class CreateProductUseCase {
             throw new HttpBadRequestException(ProductExceptionMessageUtils.PRODUCT_WITH_SAME_NAME_ALREADY_EXISTS);
         }
 
-        Product productToCreate = ProductMapper
+        Product productToCreate = productMapper
                 .mappingFromProductRequestToProductEntity(data);
 
         return productRepository.save(productToCreate);

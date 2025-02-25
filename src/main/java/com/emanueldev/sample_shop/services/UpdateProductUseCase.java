@@ -17,11 +17,14 @@ import java.util.UUID;
 public class UpdateProductUseCase {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     public UpdateProductUseCase(
-            ProductRepository productRepository
+            ProductRepository productRepository,
+            ProductMapper productMapper
     ){
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     @Transactional
@@ -45,7 +48,7 @@ public class UpdateProductUseCase {
             );
         }
 
-        ProductMapper.mappingProductRequestDTOToExistentProductEntity(productRequestDTO, product);
+        productMapper.mappingProductRequestDTOToExistentProductEntity(productRequestDTO, product);
 
         return productRepository.save(product);
     }
