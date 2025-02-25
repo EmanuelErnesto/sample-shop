@@ -1,6 +1,7 @@
 package com.emanueldev.sample_shop.unit.product.services;
 
 import com.emanueldev.sample_shop.domain.dtos.request.ProductRequestDTO;
+import com.emanueldev.sample_shop.domain.mappers.ProductMapper;
 import com.emanueldev.sample_shop.exceptions.HttpBadRequestException;
 import com.emanueldev.sample_shop.exceptions.HttpNotFoundException;
 import com.emanueldev.sample_shop.model.Product;
@@ -22,14 +23,16 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateProductsUseCaseTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private ProductMapper productMapper;
 
     @InjectMocks
     private UpdateProductUseCase updateProductUseCase;
@@ -61,6 +64,17 @@ public class UpdateProductsUseCaseTest {
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
         given(productRepository.findByName(anyString())).willReturn(Optional.empty());
         given(productRepository.save(product)).willReturn(product);
+        doAnswer(invocation -> {
+            ProductRequestDTO dto = invocation.getArgument(0);
+            Product productToUpdate = invocation.getArgument(1);
+            productToUpdate.setName(dto.getName());
+            productToUpdate.setDescription(dto.getDescription());
+            productToUpdate.setPrice(dto.getPrice());
+            productToUpdate.setStockQuantity(dto.getStockQuantity());
+            return null;
+        }).when(productMapper).mappingProductRequestDTOToExistentProductEntity(any(ProductRequestDTO.class), any(Product.class));
+
+
 
         Product updatedProduct = updateProductUseCase.execute(productId, productRequestDTO);
 

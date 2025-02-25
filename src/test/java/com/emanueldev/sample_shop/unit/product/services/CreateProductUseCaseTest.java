@@ -26,6 +26,9 @@ class CreateProductUseCaseTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private ProductMapper productMapper;
+
     @InjectMocks
     private CreateProductUseCase createProductUseCase;
 
@@ -54,6 +57,7 @@ class CreateProductUseCaseTest {
     void testGivenProductRequestDTOObject_WhenSaveProduct_thenReturnProductObject() {
         given(productRepository.findByName(anyString())).willReturn(Optional.empty());
         given(productRepository.save(product)).willReturn(product);
+        given(productMapper.mappingFromProductRequestToProductEntity(productRequestDTO)).willReturn(product);
 
         Product createdProduct = createProductUseCase.execute(productRequestDTO);
 
