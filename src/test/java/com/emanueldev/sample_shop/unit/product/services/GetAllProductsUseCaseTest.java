@@ -1,8 +1,8 @@
 package com.emanueldev.sample_shop.unit.product.services;
 
-import com.emanueldev.sample_shop.model.Product;
+import com.emanueldev.sample_shop.models.Product;
 import com.emanueldev.sample_shop.repositories.ProductRepository;
-import com.emanueldev.sample_shop.services.GetAllProductsUseCase;
+import com.emanueldev.sample_shop.services.products.GetAllProductsUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.BDDMockito.*;
@@ -39,7 +40,7 @@ public class GetAllProductsUseCaseTest {
                 .builder()
                 .name("Notebook ideapad 3i")
                 .description("Notebook para gamers exigentes.")
-                .price(3000.00D)
+                .price(new BigDecimal("3000.00"))
                 .stockQuantity(1L)
                 .build();
 
@@ -47,7 +48,7 @@ public class GetAllProductsUseCaseTest {
                 .builder()
                 .name("Notebook lenovo loq rtx 2050")
                 .description("Notebook voltado ao público gamer.")
-                .price(4140.00D)
+                .price(new BigDecimal("4140.00"))
                 .stockQuantity(10L)
                 .build();
     }

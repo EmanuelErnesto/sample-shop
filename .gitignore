@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Docker temp ###
-.docker/
+.docker/data

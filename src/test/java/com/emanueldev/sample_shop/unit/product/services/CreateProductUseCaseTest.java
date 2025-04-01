@@ -1,11 +1,11 @@
 package com.emanueldev.sample_shop.unit.product.services;
 
-import com.emanueldev.sample_shop.domain.dtos.request.ProductRequestDTO;
-import com.emanueldev.sample_shop.domain.mappers.ProductMapper;
+import com.emanueldev.sample_shop.domain.products.dto.request.ProductRequestDTO;
+import com.emanueldev.sample_shop.domain.products.mapper.ProductMapper;
 import com.emanueldev.sample_shop.exceptions.HttpBadRequestException;
-import com.emanueldev.sample_shop.model.Product;
+import com.emanueldev.sample_shop.models.Product;
 import com.emanueldev.sample_shop.repositories.ProductRepository;
-import com.emanueldev.sample_shop.services.CreateProductUseCase;
+import com.emanueldev.sample_shop.services.products.CreateProductUseCase;
 import com.emanueldev.sample_shop.utils.ProductExceptionMessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;
@@ -25,6 +26,9 @@ class CreateProductUseCaseTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private ProductMapper productMapper;
 
     @InjectMocks
     private CreateProductUseCase createProductUseCase;
@@ -38,13 +42,13 @@ class CreateProductUseCaseTest {
         productRequestDTO = new ProductRequestDTO(
                 "Geladeira Eletrolux",
                 "Geladeira Eletrolux 2 portas.",
-                950.00D,
+                new BigDecimal("950.00"),
                 10L);
         product = Product
                 .builder()
                 .name("Geladeira Eletrolux")
                 .description("Geladeira Eletrolux 2 portas.")
-                .price(950.00D)
+                .price(new BigDecimal("950.00"))
                 .stockQuantity(10L)
                 .build();
     }
@@ -54,6 +58,7 @@ class CreateProductUseCaseTest {
     void testGivenProductRequestDTOObject_WhenSaveProduct_thenReturnProductObject() {
         given(productRepository.findByName(anyString())).willReturn(Optional.empty());
         given(productRepository.save(product)).willReturn(product);
+        given(productMapper.mappingFromProductRequestToProductEntity(productRequestDTO)).willReturn(product);
 
         Product createdProduct = createProductUseCase.execute(productRequestDTO);
 
@@ -69,9 +74,7 @@ class CreateProductUseCaseTest {
     void testGivenExistingProductName_WhenSaveProduct_thenThrowsException() {
         given(productRepository.findByName(anyString())).willReturn(Optional.of(product));
 
-        HttpBadRequestException result = assertThrows(HttpBadRequestException.class, () -> {
-            createProductUseCase.execute(productRequestDTO);
-        });
+        HttpBadRequestException result = assertThrows(HttpBadRequestException.class, () -> createProductUseCase.execute(productRequestDTO));
 
         verify(productRepository, never()).save(any(Product.class));
         assertEquals(ProductExceptionMessageUtils.PRODUCT_WITH_SAME_NAME_ALREADY_EXISTS, result.getMessage());
