@@ -1,6 +1,6 @@
 package com.emanueldev.sample_shop.repositories;
 
-import com.emanueldev.sample_shop.model.Product;
+import com.emanueldev.sample_shop.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

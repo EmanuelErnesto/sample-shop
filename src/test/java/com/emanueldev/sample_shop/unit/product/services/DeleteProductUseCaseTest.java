@@ -1,9 +1,9 @@
 package com.emanueldev.sample_shop.unit.product.services;
 
 import com.emanueldev.sample_shop.exceptions.HttpNotFoundException;
-import com.emanueldev.sample_shop.model.Product;
+import com.emanueldev.sample_shop.models.Product;
 import com.emanueldev.sample_shop.repositories.ProductRepository;
-import com.emanueldev.sample_shop.services.DeleteProductUseCase;
+import com.emanueldev.sample_shop.services.products.DeleteProductUseCase;
 import com.emanueldev.sample_shop.utils.ProductExceptionMessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class DeleteProductUseCaseTest {
                 .builder()
                 .name("Mesa de madeira")
                 .description("Mesa ideal para jantares!.")
-                .price(199.99D)
+                .price(new BigDecimal("199.99"))
                 .stockQuantity(4L)
                 .build();
     }

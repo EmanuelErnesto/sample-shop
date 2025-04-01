@@ -17,3 +17,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: 'health,prometheus'
+    endpoint:
+      health:
+        enabled: true
+        show-details: always
+      prometheus:
+        enabled: true

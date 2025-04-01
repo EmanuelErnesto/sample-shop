@@ -1,4 +1,5 @@
 services:
+
   mysql:
     container_name: mysql
     image: mysql:8.2
@@ -8,5 +9,46 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: admin123
       MYSQL_DATABASE: db_sample_shop
+    networks:
+      - ss-network
     volumes:
-      - .docker/mysql/data:/var/lib/mysql
+      - .docker/data/mysql:/var/lib/mysql
+
+  api:
+    build: "."
+    container_name: api
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/db_sample_shop
+      DB_USER: root
+      DB_PASSWORD: admin123
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+    networks:
+      - ss-network
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - .docker/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - .docker/data/prometheus:/prometheus
+    networks:
+      - ss-network
+
+#  grafana:
+#    container_name: grafana
+#    image: grafana/grafana:latest
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - ss-network
+
+
+networks:
+  ss-network:
+    driver: bridge

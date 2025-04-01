@@ -1,0 +1,32 @@
+server:
+  servlet:
+    context-path: /api/v1
+  port: 8081
+
+spring:
+  application:
+    name: sample-shop
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3307/db_sample_shop}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:admin123}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: 'health,prometheus'
+    endpoint:
+      health:
+        enabled: true
+        show-details: always
+      prometheus:
+        enabled: true

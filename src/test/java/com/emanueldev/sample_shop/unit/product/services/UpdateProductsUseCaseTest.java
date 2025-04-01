@@ -1,11 +1,12 @@
 package com.emanueldev.sample_shop.unit.product.services;
 
-import com.emanueldev.sample_shop.domain.dtos.request.ProductRequestDTO;
+import com.emanueldev.sample_shop.domain.products.dto.request.ProductRequestDTO;
+import com.emanueldev.sample_shop.domain.products.mapper.ProductMapper;
 import com.emanueldev.sample_shop.exceptions.HttpBadRequestException;
 import com.emanueldev.sample_shop.exceptions.HttpNotFoundException;
-import com.emanueldev.sample_shop.model.Product;
+import com.emanueldev.sample_shop.models.Product;
 import com.emanueldev.sample_shop.repositories.ProductRepository;
-import com.emanueldev.sample_shop.services.UpdateProductUseCase;
+import com.emanueldev.sample_shop.services.products.UpdateProductUseCase;
 import com.emanueldev.sample_shop.utils.ProductExceptionMessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,20 +17,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateProductsUseCaseTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private ProductMapper productMapper;
 
     @InjectMocks
     private UpdateProductUseCase updateProductUseCase;
@@ -43,13 +47,13 @@ public class UpdateProductsUseCaseTest {
         productRequestDTO = new ProductRequestDTO(
                 "Geladeira Eletrolux Atualizada.",
                 "Geladeira Eletrolux 2 portas atualizada.",
-                980.00D,
+                new BigDecimal("980.00"),
                 10L);
         product = Product
                 .builder()
                 .name("Geladeira Eletrolux")
                 .description("Geladeira Eletrolux 2 portas.")
-                .price(950.00D)
+                .price(new BigDecimal("950.00"))
                 .stockQuantity(10L)
                 .build();
     }
@@ -61,6 +65,17 @@ public class UpdateProductsUseCaseTest {
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
         given(productRepository.findByName(anyString())).willReturn(Optional.empty());
         given(productRepository.save(product)).willReturn(product);
+        doAnswer(invocation -> {
+            ProductRequestDTO dto = invocation.getArgument(0);
+            Product productToUpdate = invocation.getArgument(1);
+            productToUpdate.setName(dto.getName());
+            productToUpdate.setDescription(dto.getDescription());
+            productToUpdate.setPrice(dto.getPrice());
+            productToUpdate.setStockQuantity(dto.getStockQuantity());
+            return null;
+        }).when(productMapper).mappingProductRequestDTOToExistentProductEntity(any(ProductRequestDTO.class), any(Product.class));
+
+
 
         Product updatedProduct = updateProductUseCase.execute(productId, productRequestDTO);
 
@@ -77,9 +92,7 @@ public class UpdateProductsUseCaseTest {
         UUID productId = UUID.fromString("7d40eb46-c0d2-4711-8e94-c73cc1fba505");
         given(productRepository.findById(productId)).willReturn(Optional.empty());
 
-        HttpNotFoundException result = assertThrows(HttpNotFoundException.class, () -> {
-           updateProductUseCase.execute(productId, productRequestDTO);
-        });
+        HttpNotFoundException result = assertThrows(HttpNotFoundException.class, () -> updateProductUseCase.execute(productId, productRequestDTO));
 
         verify(productRepository, never()).save(any(Product.class));
         assertEquals(ProductExceptionMessageUtils.PRODUCT_NOT_FOUND, result.getMessage());
@@ -98,7 +111,7 @@ public class UpdateProductsUseCaseTest {
                 .id(UUID.fromString("c8a6188d-6ad5-42d9-aa4d-51f67cb97f85"))
                 .name(nameOfProduct2)
                 .description("Geladeira Eletrolux 2 portas.")
-                .price(950.00D)
+                .price(new BigDecimal("950.00"))
                 .stockQuantity(10L)
                 .build();
 
@@ -107,9 +120,7 @@ public class UpdateProductsUseCaseTest {
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
         given(productRepository.findByName(nameOfProduct2)).willReturn(Optional.of(product2));
 
-        HttpBadRequestException result = assertThrows(HttpBadRequestException.class, () -> {
-            updateProductUseCase.execute(productId, productRequestDTO);
-        });
+        HttpBadRequestException result = assertThrows(HttpBadRequestException.class, () -> updateProductUseCase.execute(productId, productRequestDTO));
 
         verify(productRepository, never()).save(any(Product.class));
         assertEquals(ProductExceptionMessageUtils.PRODUCT_WITH_SAME_NAME_ALREADY_EXISTS, result.getMessage());
