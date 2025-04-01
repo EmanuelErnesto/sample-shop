@@ -40,13 +40,13 @@ services:
     networks:
       - ss-network
 
-#  grafana:
-#    container_name: grafana
-#    image: grafana/grafana:latest
-#    ports:
-#      - "3000:3000"
-#    networks:
-#      - ss-network
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - ss-network
 
 
 networks:
