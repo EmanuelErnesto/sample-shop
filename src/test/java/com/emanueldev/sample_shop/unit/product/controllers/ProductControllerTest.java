@@ -1,5 +1,6 @@
 package com.emanueldev.sample_shop.unit.product.controllers;
 
+import com.emanueldev.sample_shop.controllers.ProductController;
 import com.emanueldev.sample_shop.domain.products.dto.request.ProductRequestDTO;
 import com.emanueldev.sample_shop.domain.products.dto.response.PaginatedProductResponseDTO;
 import com.emanueldev.sample_shop.domain.products.dto.response.ProductResponseDTO;
@@ -34,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.is;
 
-@WebMvcTest
+@WebMvcTest(controllers = { ProductController.class})
 public class ProductControllerTest {
 
     @Autowired
