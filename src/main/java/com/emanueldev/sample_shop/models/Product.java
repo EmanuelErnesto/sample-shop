@@ -1,8 +1,9 @@
-package com.emanueldev.sample_shop.model;
+package com.emanueldev.sample_shop.models;
 
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class Product {
     private String description;
 
     @Column(nullable = false)
-    private Double price;
+    private BigDecimal price;
 
     @Column(name = "stock_quantity", precision = 10, scale = 2, nullable = false)
     private Long stockQuantity;
